@@ -1,3 +1,6 @@
+# Claude Code 插件清单（本地开发用，不推送）
+.claude-plugin/
+
 # 构建产物目录（由 scripts/build_knowledge_base.py 等脚本运行时生成）
 output/
 
