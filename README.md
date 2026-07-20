@@ -88,7 +88,7 @@
 
 | # | 技能名 | 路径 | 职责 | 触发意图 |
 |---|--------|------|------|---------:|
-| 0 | **chem-dispatcher** | `SKILL.md`（项目根）| **顶层总调度**：元问题分流 + Agent 调度 + Skill 调度 | 全部入口 |
+| 0 | **chem-dispatcher** | `skills/chem-dispatcher/SKILL.md` | **顶层总调度**：元问题分流 + Agent 调度 + Skill 调度 | 全部入口 |
 | 1 | **chem-skill-router** | `skills/chem-skill-router/SKILL.md` | **Skill 层子调度器**：6 类业务意图路由 | 具体化学教学请求 |
 | 2 | **chem-shiyan** | `skills/chem-shiyan/SKILL.md` | AI 智能实验：8 段结构化引导（预习/实操/复盘/居家） | experiment |
 | 3 | **chem-lianxi** | `skills/chem-lianxi/SKILL.md` | AI 智能练习题：四题型命题 + DOCX 输出 | quiz |
@@ -104,7 +104,7 @@
 用户输入（自然语言 + 可含文件附件）
        │
        ▼
- chem-dispatcher（顶层总调度 · 项目根 SKILL.md）
+ chem-dispatcher（顶层总调度 · skills/chem-dispatcher/SKILL.md）
        │
    ├── 元问题（"化知星能做什么""有哪些技能"）→ 直接答复
    │

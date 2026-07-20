@@ -1,6 +1,9 @@
 # 构建产物目录（由 scripts/build_knowledge_base.py 等脚本运行时生成）
 output/
 
+# 知识库原文（已独立管理，不在本仓库维护）
+knowledge-base/
+
 # Python 运行时
 __pycache__/
 *.py[cod]

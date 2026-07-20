@@ -2,7 +2,7 @@
 name: chem-skill-router
 description: >
   化知星·Skill 层子调度器（业务技能路由）。
-  职责：接收来自顶层调度 chem-dispatcher（项目根 SKILL.md）的具体化学教学请求，
+  职责：接收来自顶层调度 chem-dispatcher（skills/chem-dispatcher/SKILL.md）的具体化学教学请求，
   按意图分类路由到 6 个业务子技能之一执行。
   支持 6 类意图分类：qa(答疑)/quiz(出题)/experiment(实验引导)/profile(学情分析)/teaching(教学业务)/doc(文档解析)。
   含意图决策树、关键词触发表、子技能引用路径、路由冲突仲裁规则。
@@ -23,10 +23,10 @@ description: >
 
 ## 一、职责定位
 
-本技能是 Skill 层子调度器，**只做意图识别与路由**，不直接生成业务内容。由顶层 `chem-dispatcher`（项目根 SKILL.md）调用，识别具体化学教学意图后路由到 6 个业务子技能之一。
+本技能是 Skill 层子调度器，**只做意图识别与路由**，不直接生成业务内容。由顶层 `chem-dispatcher`（skills/chem-dispatcher/SKILL.md）调用，识别具体化学教学意图后路由到 6 个业务子技能之一。
 
 ```
-chem-dispatcher（根 SKILL.md）
+chem-dispatcher（skills/chem-dispatcher/SKILL.md）
    │
    ▼（已识别为具体化学教学请求）
 chem-skill-router（本技能）

@@ -9,7 +9,7 @@
 ## 一、技能拓扑
 
 ```
-chem-dispatcher  (项目根 SKILL.md：顶层总调度 — 元问题分流 + Agent 调度 + Skill 调度)
+chem-dispatcher  (skills/chem-dispatcher/SKILL.md：顶层总调度 — 元问题分流 + Agent 调度 + Skill 调度)
        │
    ├── 元问题（能力咨询/使用引导）→ 直接答复
        │
@@ -29,7 +29,7 @@ chem-dispatcher  (项目根 SKILL.md：顶层总调度 — 元问题分流 + Age
 
 | 技能 | 路径（相对项目根）| 职责 | 主要触发关键词 |
 |------|---------------|------|-------------|
-| chem-dispatcher | `SKILL.md`（项目根）| **顶层总调度**：元问题分流 + Agent 调度 + Skill 调度 | 化知星、能做什么、Help、初中化学 |
+| chem-dispatcher | `skills/chem-dispatcher/SKILL.md` | **顶层总调度**：元问题分流 + Agent 调度 + Skill 调度 | 化知星、能做什么、Help、初中化学 |
 | chem-skill-router | `skills/chem-skill-router/SKILL.md` | **Skill 层子调度器**：6 类业务意图路由 | 化学教学、化学实验、化学出题 |
 | chem-xueqing | `skills/chem-xueqing/SKILL.md` | 五维能力诊断 + 提升方案 | 学情、能力评估、薄弱点 |
 | chem-lianxi | `skills/chem-lianxi/SKILL.md` | 四题型命题 + 答案解析 | 出题、命题、试卷、练习题 |
@@ -87,15 +87,12 @@ skills/                                ← Skills 安装包根目录
 
 ```powershell
 # PowerShell 管理员模式运行
-$src = "E:\AIProgram\化学AI虚拟实验skills\skills"
+$src = "E:\AIProgram\化学AI虚拟实验skills\AI化学虚拟实验SKILL\skills"
 $dst = "$env:USERPROFILE\.claude\skills"
 
-foreach ($name in @("chem-skill-router","chem-xueqing","chem-lianxi","chem-shiyan","chem-jiaoxue","chem-wenkuai")) {
+foreach ($name in @("chem-dispatcher","chem-skill-router","chem-xueqing","chem-lianxi","chem-shiyan","chem-jiaoxue","chem-wenkuai")) {
     New-Item -ItemType SymbolicLink -Path "$dst\$name" -Target "$src\$name"
 }
-
-# 注：chem-dispatcher 位于项目根 SKILL.md，作为项目级入口总调度技能单独软链接
-New-Item -ItemType SymbolicLink -Path "$dst\chem-dispatcher" -Target "E:\AIProgram\化学AI虚拟实验skills\SKILL.md"
 ```
 
 ### 方式 B：复制（参赛部署推荐，独立可移植）
