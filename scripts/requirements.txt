@@ -1,0 +1,10 @@
+# 化知星 Skills 项目 Python 工具依赖
+# Python 版本：3.9+
+#
+# 安装：pip install -r scripts/requirements.txt
+
+PyYAML>=6.0,<7.0    # validate_agents.py 依赖（YAML 解析）
+
+# ───────────────────────────── 后续可选依赖（暂未启用）─────────────────────────────
+# rich>=13.0         # 彩色终端输出（如需更友好的 CLI 体验）
+# click>=8.0         # 命令行框架（如需更复杂的子命令）

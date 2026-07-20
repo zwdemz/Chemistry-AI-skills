@@ -1,0 +1,575 @@
+app:
+  description: '化知星总调度Agent——识别用户意图后路由到智能助教/AI智能练习题/AI智能实验/AI学情分析/AI教学业务过程五个子能力，实现多Agent协作统一入口'
+  icon: "🧭"
+  icon_background: '#E0F2FE'
+  mode: workflow
+  name: 化知星·总调度
+  use_icon_as_answer_icon: false
+dependencies:
+- current_identifier: null
+  type: marketplace
+  value:
+    marketplace_plugin_unique_identifier: langgenius/volcengine_maas:0.0.20@aff2eaf766b1774519c3ca0e77de0b28c87b71cce6390b22a103518e8a5e4ae7
+kind: app
+version: 0.3.0
+workflow:
+  conversation_variables: []
+  environment_variables: []
+  features:
+    file_upload:
+      enabled: false
+      image:
+        enabled: false
+    opening_statement: |
+      嗨！👋 我是「化知星」，你的初中化学 AI 虚拟实验总调度员。
+      直接问我任何化学问题，我会自动判断你的需求：
+      💬 问知识/操作/安全 → 智能助教答疑
+      ✏️ 要习题/试卷 → AI智能练习题
+      🧪 做虚拟实验 → AI智能实验引导
+      📊 看学情/薄弱点 → AI学情分析
+      📋 批改报告/误差/物料 → AI教学业务过程
+      开始吧！比如"制取氧气时试管口为什么要略向下倾斜？"或"帮我出 5 道金属活动性选择题"
+    retriever_resource:
+      enabled: true
+    sensitive_word_avoidance:
+      enabled: false
+    speech_to_text:
+      enabled: true
+    suggested_questions:
+    - 制取氧气时试管口为什么要略向下倾斜？
+    - 帮我出 5 道金属活动性顺序选择题
+    - 高锰酸钾制氧实验完整步骤是什么？
+    - 我这学期实验易错点集中在哪？怎么提升？
+    - 帮我批改这份二氧化碳制取实验报告
+    suggested_questions_after_answer:
+      enabled: true
+    text_to_speech:
+      enabled: false
+      language: zh-CN
+      voice: ''
+  graph:
+    edges:
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: start
+        targetType: llm
+      id: start-to-classify
+      source: start-node
+      sourceHandle: source
+      target: llm-classify
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: llm
+        targetType: if-else
+      id: classify-to-branch
+      source: llm-classify
+      sourceHandle: source
+      target: intent-branch
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: if-else
+        targetType: llm
+      id: branch-qa
+      source: intent-branch
+      sourceHandle: qa
+      target: llm-qa
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: if-else
+        targetType: llm
+      id: branch-quiz
+      source: intent-branch
+      sourceHandle: quiz
+      target: llm-quiz
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: if-else
+        targetType: llm
+      id: branch-experiment
+      source: intent-branch
+      sourceHandle: experiment
+      target: llm-experiment
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: if-else
+        targetType: llm
+      id: branch-profile
+      source: intent-branch
+      sourceHandle: profile
+      target: llm-profile
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: if-else
+        targetType: llm
+      id: branch-teaching
+      source: intent-branch
+      sourceHandle: teaching
+      target: llm-teaching
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: llm
+        targetType: end
+      id: qa-to-end
+      source: llm-qa
+      sourceHandle: source
+      target: end-node
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: llm
+        targetType: end
+      id: quiz-to-end
+      source: llm-quiz
+      sourceHandle: source
+      target: end-node
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: llm
+        targetType: end
+      id: experiment-to-end
+      source: llm-experiment
+      sourceHandle: source
+      target: end-node
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: llm
+        targetType: end
+      id: profile-to-end
+      source: llm-profile
+      sourceHandle: source
+      target: end-node
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: llm
+        targetType: end
+      id: teaching-to-end
+      source: llm-teaching
+      sourceHandle: source
+      target: end-node
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    nodes:
+    - data:
+        desc: 调度入口
+        selected: false
+        title: 开始
+        type: start
+        variables: []
+      height: 54
+      id: start-node
+      position:
+        x: 80
+        y: 300
+      positionAbsolute:
+        x: 80
+        y: 300
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        context:
+          enabled: false
+          variable_selector: []
+        desc: 意图分类——qa/quiz/experiment/profile/teaching
+        model:
+          completion_params:
+            temperature: 0.3
+            max_tokens: 50
+          mode: chat
+          name: Doubao-Seed-1.6
+          provider: langgenius/volcengine_maas/volcengine_maas
+        prompt_template:
+        - id: chem-classify
+          role: system
+          text: |
+            仅输出一个词判断用户意图：
+            - qa：化学知识问答/实验操作指导/安全规范/原理询问（是什么/为什么/怎么做/对吗）
+            - quiz：出题/习题/试卷/练习/考题生成
+            - experiment：虚拟实验操作/实验步骤/仪器组装/现象描述/变量调试
+            - profile：学情分析/能力评估/薄弱点/易错诊断/学习建议
+            - teaching：报告批改/误差分析/教学物料/预习单/教案/任务单生成
+            用户输入：{{#sys.query#}}
+            输出：
+        selected: false
+        title: 意图识别
+        type: llm
+        variables: []
+        vision:
+          enabled: false
+      height: 90
+      id: llm-classify
+      position:
+        x: 384
+        y: 300
+      positionAbsolute:
+        x: 384
+        y: 300
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        cases:
+        - case_id: qa
+          conditions:
+          - comparison_operator: contains
+            id: c-qa
+            value: qa
+            varType: string
+            variable_selector:
+            - llm-classify
+            - text
+          logical_operator: and
+        - case_id: quiz
+          conditions:
+          - comparison_operator: contains
+            id: c-quiz
+            value: quiz
+            varType: string
+            variable_selector:
+            - llm-classify
+            - text
+          logical_operator: and
+        - case_id: experiment
+          conditions:
+          - comparison_operator: contains
+            id: c-exp
+            value: experiment
+            varType: string
+            variable_selector:
+            - llm-classify
+            - text
+          logical_operator: and
+        - case_id: profile
+          conditions:
+          - comparison_operator: contains
+            id: c-profile
+            value: profile
+            varType: string
+            variable_selector:
+            - llm-classify
+            - text
+          logical_operator: and
+        - case_id: teaching
+          conditions:
+          - comparison_operator: contains
+            id: c-teaching
+            value: teaching
+            varType: string
+            variable_selector:
+            - llm-classify
+            - text
+          logical_operator: and
+        desc: 路由到 5 个子能力分支
+        selected: false
+        title: 意图路由
+        type: if-else
+      height: 340
+      id: intent-branch
+      position:
+        x: 688
+        y: 300
+      positionAbsolute:
+        x: 688
+        y: 300
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        context:
+          enabled: false
+          variable_selector: []
+        desc: 智能助教·答疑分支
+        model:
+          completion_params:
+            temperature: 0.7
+            max_tokens: 800
+          mode: chat
+          name: Doubao-Seed-1.6
+          provider: langgenius/volcengine_maas/volcengine_maas
+        prompt_template:
+        - id: chem-qa
+          role: system
+          text: |
+            # 化知星·智能助教（答疑）
+            面向12-15岁初中生，亲切专业的化学助教。
+            ## 结构：1.核心答案(1-2句直击) 2.知识展开(📌采分点) 3.易错提醒(❌→✅) 4.安全提示(如涉及实验)
+            ## 要求：简体中文、化学方程式配平、口语化、不确定标「需与教材核对」
+            问题：{{#sys.query#}}
+        selected: false
+        title: 智能助教
+        type: llm
+        variables: []
+        vision:
+          enabled: false
+      height: 90
+      id: llm-qa
+      position:
+        x: 992
+        y: 60
+      positionAbsolute:
+        x: 992
+        y: 60
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        context:
+          enabled: false
+          variable_selector: []
+        desc: AI智能练习题·出题分支
+        model:
+          completion_params:
+            temperature: 0.7
+            max_tokens: 1200
+          mode: chat
+          name: Doubao-Seed-1.6
+          provider: langgenius/volcengine_maas/volcengine_maas
+        prompt_template:
+        - id: chem-quiz
+          role: system
+          text: |
+            # 化知星·AI智能练习题
+            根据用户需求生成初中化学题目。
+            ## 题型：选择题(四选一)/判断题/填空题/简答题，按需生成
+            ## 要求：考点贴合人教版课标、方程式配平、附参考答案与解析、干扰项有迷惑性
+            ## 提示：如需完整试卷+DOCX，请直接使用「AI智能练习题」专项Agent
+            需求：{{#sys.query#}}
+        selected: false
+        title: AI智能练习题
+        type: llm
+        variables: []
+        vision:
+          enabled: false
+      height: 90
+      id: llm-quiz
+      position:
+        x: 992
+        y: 200
+      positionAbsolute:
+        x: 992
+        y: 200
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        context:
+          enabled: false
+          variable_selector: []
+        desc: AI智能实验·引导分支
+        model:
+          completion_params:
+            temperature: 0.7
+            max_tokens: 1000
+          mode: chat
+          name: Doubao-Seed-1.6
+          provider: langgenius/volcengine_maas/volcengine_maas
+        prompt_template:
+        - id: chem-exp
+          role: system
+          text: |
+            # 化知星·AI智能实验
+            初中化学虚拟实验操作引导员，覆盖四层实验体系（基础必考/变量探究/居家拓展/安全模拟）。
+            ## 结构：1.实验目的+方程式 2.分步操作(编号+仪器+原因) 3.标准现象+结论 4.🛡️安全提示 5.❌→✅常见错误
+            ## 要求：步骤可执行、安全红线前置、读数/组装细节到位
+            需求：{{#sys.query#}}
+        selected: false
+        title: AI智能实验
+        type: llm
+        variables: []
+        vision:
+          enabled: false
+      height: 90
+      id: llm-experiment
+      position:
+        x: 992
+        y: 340
+      positionAbsolute:
+        x: 992
+        y: 340
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        context:
+          enabled: false
+          variable_selector: []
+        desc: AI学情分析·诊断分支
+        model:
+          completion_params:
+            temperature: 0.6
+            max_tokens: 800
+          mode: chat
+          name: Doubao-Seed-1.6
+          provider: langgenius/volcengine_maas/volcengine_maas
+        prompt_template:
+        - id: chem-profile
+          role: system
+          text: |
+            # 化知星·AI学情分析
+            基于学生提供的实验记录、答题情况或自述，诊断化学学习薄弱点。
+            ## 结构：1.能力雷达评估(基础操作/反应记忆/变量思维/安全意识/数据处理 五维) 2.薄弱点定位 3.归因分析 4.个性化提升建议 5.推荐专项训练
+            ## 要求：结合课标单元、给出可执行训练方案、分层(学困/中等/优等)
+            输入：{{#sys.query#}}
+        selected: false
+        title: AI学情分析
+        type: llm
+        variables: []
+        vision:
+          enabled: false
+      height: 90
+      id: llm-profile
+      position:
+        x: 992
+        y: 480
+      positionAbsolute:
+        x: 992
+        y: 480
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        context:
+          enabled: false
+          variable_selector: []
+        desc: AI教学业务过程·批改/物料分支
+        model:
+          completion_params:
+            temperature: 0.6
+            max_tokens: 1200
+          mode: chat
+          name: Doubao-Seed-1.6
+          provider: langgenius/volcengine_maas/volcengine_maas
+        prompt_template:
+        - id: chem-teaching
+          role: system
+          text: |
+            # 化知星·AI教学业务过程
+            处理教学闭环中的 AI 辅助任务：实验报告批改/误差分析/教学物料生成/预习单/教案。
+            ## 自动判断子任务：
+            - 报告批改：多维评分(原理/操作/数据/结论 各25分)+批注+标准答案对照
+            - 误差分析：学生数据 vs 标准数据→四维归因(器材/操作/试剂/环境)+改进建议
+            - 物料生成：预习单/教案/任务单/安全手册，格式规范可直接使用
+            ## 要求：教师视角、严谨规范、标注采分点📌、安全提醒🛡️
+            ## 提示：如需 DOCX 文档输出，请使用对应专项 Agent
+            任务：{{#sys.query#}}
+        selected: false
+        title: AI教学业务过程
+        type: llm
+        variables: []
+        vision:
+          enabled: false
+      height: 90
+      id: llm-teaching
+      position:
+        x: 992
+        y: 620
+      positionAbsolute:
+        x: 992
+        y: 620
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        desc: 输出
+        outputs:
+        - value_selector:
+          - llm-qa
+          - text
+          variable: text
+        - value_selector:
+          - llm-quiz
+          - text
+          variable: text
+        - value_selector:
+          - llm-experiment
+          - text
+          variable: text
+        - value_selector:
+          - llm-profile
+          - text
+          variable: text
+        - value_selector:
+          - llm-teaching
+          - text
+          variable: text
+        selected: false
+        title: 结束
+        type: end
+      height: 116
+      id: end-node
+      position:
+        x: 1296
+        y: 340
+      positionAbsolute:
+        x: 1296
+        y: 340
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    viewport:
+      x: 0
+      y: 0
+      zoom: 0.8

@@ -1,0 +1,468 @@
+app:
+  description: 'AI学情分析——基于学生实验记录、答题数据或自述，结合课标考点与必考实验库，诊断五维能力（基础操作/反应记忆/变量思维/安全意识/数据处理）、定位薄弱点、归因分析、生成个性化提升方案与专项训练建议，输出 Markdown 报告与 DOCX 文档'
+  icon: "📊"
+  icon_background: '#E0E7FF'
+  mode: workflow
+  name: AI学情分析
+  use_icon_as_answer_icon: false
+dependencies:
+- current_identifier: null
+  type: marketplace
+  value:
+    marketplace_plugin_unique_identifier: langgenius/volcengine_maas:0.0.20@aff2eaf766b1774519c3ca0e77de0b28c87b71cce6390b22a103518e8a5e4ae7
+- current_identifier: null
+  type: marketplace
+  value:
+    marketplace_plugin_unique_identifier: langgenius/xinference:0.0.4@db625fbb6b2f235adb820dd7dc3d98090f536e888c20150a0ba76ea47f50b178
+- current_identifier: null
+  type: package
+  value:
+    plugin_unique_identifier: stvlynn/doc:0.0.1@900d82963e63c505136dfc77f3e06329326e714ca66bed668224e811f73efc7b
+kind: app
+version: 0.3.0
+workflow:
+  conversation_variables: []
+  environment_variables:
+  - description: 化学知识库通用检索关键词（作为兜底 query 使用）
+    id: 8f2a1c00-0005-4aa1-8bd7-chem005
+    name: hx
+    selector:
+    - env
+    - hx
+    value: 初中化学实验
+    value_type: string
+  features:
+    file_upload:
+      enabled: false
+      image:
+        enabled: false
+    opening_statement: ''
+    retriever_resource:
+      enabled: true
+    sensitive_word_avoidance:
+      enabled: false
+    speech_to_text:
+      enabled: false
+    suggested_questions: []
+    suggested_questions_after_answer:
+      enabled: false
+    text_to_speech:
+      enabled: false
+      language: ''
+      voice: ''
+  graph:
+    edges:
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: start
+        targetType: knowledge-retrieval
+      id: start-to-kb
+      source: '1780000000101'
+      sourceHandle: source
+      target: '1780000000102'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: knowledge-retrieval
+        targetType: code
+      id: kb-to-code
+      source: '1780000000102'
+      sourceHandle: source
+      target: '1780000000103'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: code
+        targetType: llm
+      id: code-to-llm
+      source: '1780000000103'
+      sourceHandle: source
+      target: '1780000000104'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: llm
+        targetType: tool
+      id: llm-to-docx
+      source: '1780000000104'
+      sourceHandle: source
+      target: '1780000000105'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: tool
+        targetType: code
+      id: docx-to-code2
+      source: '1780000000105'
+      sourceHandle: source
+      target: '1780000000106'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: code
+        targetType: end
+      id: code2-to-end
+      source: '1780000000106'
+      sourceHandle: source
+      target: '1780000000107'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    nodes:
+    - data:
+        desc: 采集学生数据、年级、诊断维度、学生层次等学情分析参数
+        selected: false
+        title: 开始
+        type: start
+        variables:
+        - label: 学生数据
+          max_length: 2000
+          options: []
+          required: true
+          type: paragraph
+          variable: student_data
+        - label: 年级
+          max_length: 48
+          options:
+          - 九年级上
+          - 九年级下
+          required: true
+          type: select
+          variable: grade
+        - label: 学生层次
+          max_length: 48
+          options:
+          - 自动判断
+          - 学困生
+          - 中等生
+          - 优等生
+          required: true
+          type: select
+          variable: student_level
+        - label: 诊断重点
+          max_length: 48
+          options:
+          - 综合诊断
+          - 实验操作薄弱
+          - 反应记忆薄弱
+          - 变量思维薄弱
+          - 安全意识薄弱
+          - 数据处理薄弱
+          required: true
+          type: select
+          variable: diagnosis_focus
+        - label: 关注单元
+          max_length: 48
+          options: []
+          required: false
+          type: text-input
+          variable: focus_unit
+      height: 340
+      id: '1780000000101'
+      position:
+        x: 80
+        y: 282
+      positionAbsolute:
+        x: 80
+        y: 282
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        dataset_ids:
+        - REPLACE_WITH_HX_06_KAODIAN_SUCHA
+        - REPLACE_WITH_HX_01_KEBIAO_BIKAO
+        desc: 学情分析→考点速查 + 课标必考实验库
+        multiple_retrieval_config:
+          reranking_enable: true
+          reranking_mode: reranking_model
+          reranking_model:
+            model: bge-reranker-base
+            provider: langgenius/xinference/xinference
+          score_threshold: null
+          top_k: 10
+        query_variable_selector:
+        - '1780000000101'
+        - diagnosis_focus
+        retrieval_mode: multiple
+        selected: false
+        title: 课标考点检索
+        type: knowledge-retrieval
+      height: 92
+      id: '1780000000102'
+      position:
+        x: 384
+        y: 282
+      positionAbsolute:
+        x: 384
+        y: 282
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        code: "import json\n\ndef main(arg1: list | dict) -> dict:\n    # 将知识库检索结果序列化为\
+          \ JSON 字符串\n    json_str = json.dumps(arg1, ensure_ascii=False, indent=2)\n\
+          \    return {\n        \"result\": json_str,\n    }"
+        code_language: python3
+        desc: ''
+        outputs:
+          result:
+            children: null
+            type: string
+        selected: false
+        title: 检索结果序列化
+        type: code
+        variables:
+        - value_selector:
+          - '1780000000102'
+          - result
+          variable: arg1
+      height: 54
+      id: '1780000000103'
+      position:
+        x: 691
+        y: 282
+      positionAbsolute:
+        x: 691
+        y: 282
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        context:
+          enabled: false
+          variable_selector: []
+        desc: 学情诊断专家——五维能力雷达+薄弱点定位+归因+提升方案
+        model:
+          completion_params:
+            temperature: 0.6
+          mode: chat
+          name: Doubao-Seed-1.6
+          provider: langgenius/volcengine_maas/volcengine_maas
+        prompt_template:
+        - id: chem-profile-system-01
+          role: system
+          text: |
+            ## 语言
+            始终使用简体中文回答。引用化学方程式必须配平。
+
+            ## Role
+            你是「化知星」初中化学生情诊断专家，能基于学生实验记录、答题数据或自述，结合课标考点与必考实验库，完成"五维能力评估→薄弱点定位→归因分析→提升建议→专项训练"的完整学情诊断闭环。
+
+            ## Input Parameters
+            - 学生数据：{{#1780000000101.student_data#}}
+            - 年级：{{#1780000000101.grade#}}
+            - 学生层次：{{#1780000000101.student_level#}}
+            - 诊断重点：{{#1780000000101.diagnosis_focus#}}
+            - 关注单元：{{#1780000000101.focus_unit#}}
+            - 课标参考：{{#1780000000103.result#}}
+
+            ## Constraints
+            1. **数据为据**：所有诊断结论必须来源于【学生数据】，不得臆测；数据不足时明确指出"信息不足，建议补充XX数据"。
+            2. **课标对标**：能力评估以【课标参考】为参照系，对标人教版各单元考点。
+            3. **五维评估**：严格按"基础操作 / 反应记忆 / 变量思维 / 安全意识 / 数据处理"五维度评分（每维度 0-20 分，满分 100）。
+            4. **分层建议**：
+               - 学困生：重点补基础概念与操作规范，提供记忆口诀。
+               - 中等生：强化变量思维与综合运用，提供采分点训练。
+               - 优等生：深化探究思维，提供拓展题与高中衔接建议。
+            5. **专项推荐**：训练方案需明确单元、题型、难度、预计时长，可落地执行。
+            6. **隐私保护**：不得记录或询问姓名、学校等个人信息。
+            7. **输出限制**：除学情报告正文外，禁止输出闲聊或无关信息。
+
+            ## Output Format
+            严格按以下结构输出 Markdown：
+
+            # 📊 AI学情分析报告
+            **[学生层次]·[诊断重点]**
+            [年级]·人教版初中化学
+            生成日期：[YYYY-MM-DD]
+
+            ---
+
+            ## 一、五维能力雷达
+            | 维度 | 得分/20 | 评价 |
+            |------|:------:|------|
+            | 基础操作 | X | ... |
+            | 反应记忆 | X | ... |
+            | 变量思维 | X | ... |
+            | 安全意识 | X | ... |
+            | 数据处理 | X | ... |
+            **总分：XX / 100**
+
+            ## 二、薄弱点定位
+            1. **[薄弱维度1]**：具体表现...
+            2. **[薄弱维度2]**：具体表现...
+
+            ## 三、归因分析
+            | 薄弱点 | 知识归因 | 习惯归因 | 策略归因 |
+            |--------|---------|---------|---------|
+            | ... | ... | ... | ... |
+
+            ## 四、个性化提升建议
+            1. **[短期1周]**：...
+            2. **[中期1月]**：...
+            3. **[长期学期]**：...
+
+            ## 五、推荐专项训练
+            | 训练主题 | 单元 | 题型 | 难度 | 预计时长 |
+            |---------|------|------|------|:-------:|
+            | ... | ... | ... | ... | ... 分钟 |
+
+            ## 六、学习路线图
+            阶段性目标 + 关键里程碑
+        selected: false
+        title: 学情诊断生成
+        type: llm
+        variables: []
+        vision:
+          enabled: false
+      height: 90
+      id: '1780000000104'
+      position:
+        x: 1010
+        y: 282
+      positionAbsolute:
+        x: 1010
+        y: 282
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        desc: ''
+        is_team_authorization: true
+        output_schema: null
+        paramSchemas:
+        - auto_generate: null
+          default: null
+          form: llm
+          human_description:
+            zh_Hans: 要转换为Word文档的Markdown内容
+          label:
+            zh_Hans: Markdown内容
+          name: markdown_content
+          options: []
+          required: true
+          type: string
+        - auto_generate: null
+          default: null
+          form: llm
+          human_description:
+            zh_Hans: Word文档标题
+          label:
+            zh_Hans: 文档标题
+          name: title
+          options: []
+          required: false
+          type: string
+        params:
+          markdown_content: ''
+          title: ''
+        provider_id: stvlynn/doc/doc
+        provider_name: stvlynn/doc/doc
+        provider_type: builtin
+        selected: false
+        title: Markdown转DOCX转换器
+        tool_configurations: {}
+        tool_description: 将Markdown内容转换为DOCX（Word）文档
+        tool_label: Markdown转DOCX转换器
+        tool_name: markdown_to_docx_converter
+        tool_parameters:
+          markdown_content:
+            type: mixed
+            value: '{{#1780000000104.text#}}'
+          title:
+            type: mixed
+            value: AI学情分析报告
+        type: tool
+      height: 54
+      id: '1780000000105'
+      position:
+        x: 1330
+        y: 282
+      positionAbsolute:
+        x: 1330
+        y: 282
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        code: "def main(arg1: list) -> dict:\n    # 从 DOCX 文件数组中提取第一个文件的 url\n\
+          \    if not arg1:\n        return {\"result\": \"\"}\n    url = arg1[0].get(\"\
+          url\", \"\")\n    return {\n        \"result\": url,\n    }"
+        code_language: python3
+        desc: ''
+        outputs:
+          result:
+            children: null
+            type: string
+        selected: false
+        title: 提取文档链接
+        type: code
+        variables:
+        - value_selector:
+          - '1780000000105'
+          - files
+          variable: arg1
+      height: 54
+      id: '1780000000106'
+      position:
+        x: 1650
+        y: 282
+      positionAbsolute:
+        x: 1650
+        y: 282
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        desc: ''
+        outputs:
+        - value_selector:
+          - '1780000000104'
+          - text
+          variable: text
+        - value_selector:
+          - '1780000000106'
+          - result
+          variable: url
+        selected: false
+        title: 结束
+        type: end
+      height: 116
+      id: '1780000000107'
+      position:
+        x: 1970
+        y: 282
+      positionAbsolute:
+        x: 1970
+        y: 282
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    viewport:
+      x: 0
+      y: 0
+      zoom: 0.8

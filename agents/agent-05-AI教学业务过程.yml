@@ -1,0 +1,798 @@
+app:
+  description: 'AI教学业务过程——处理教学闭环中的 AI 辅助任务（实验报告批改/误差分析/教学物料生成/预习复盘），自动判断子任务类型并路由到对应知识库，生成结构化 Markdown 报告与 DOCX 文档'
+  icon: "📋"
+  icon_background: '#FEF3C7'
+  mode: workflow
+  use_icon_as_answer_icon: false
+  name: AI教学业务过程
+dependencies:
+- current_identifier: null
+  type: marketplace
+  value:
+    marketplace_plugin_unique_identifier: langgenius/volcengine_maas:0.0.20@aff2eaf766b1774519c3ca0e77de0b28c87b71cce6390b22a103518e8a5e4ae7
+- current_identifier: null
+  type: marketplace
+  value:
+    marketplace_plugin_unique_identifier: langgenius/xinference:0.0.4@db625fbb6b2f235adb820dd7dc3d98090f536e888c20150a0ba76ea47f50b178
+- current_identifier: null
+  type: package
+  value:
+    plugin_unique_identifier: stvlynn/doc:0.0.1@900d82963e63c505136dfc77f3e06329326e714ca66bed668224e811f73efc7b
+kind: app
+version: 0.3.0
+workflow:
+  conversation_variables: []
+  environment_variables: []
+  features:
+    file_upload:
+      enabled: true
+      allowed_file_upload_methods:
+      - local_file
+      - remote_url
+      allowed_file_extensions:
+      - .PDF
+      - .DOC
+      - .DOCX
+      - .TXT
+      - .MD
+      - .JPG
+      - .JPEG
+      - .PNG
+      allowed_file_types:
+      - document
+      - image
+      number_limits: 3
+      image:
+        enabled: true
+        number_limits: 3
+        detail: high
+        transfer_methods:
+        - local_file
+        - remote_url
+    opening_statement: ''
+    retriever_resource:
+      enabled: true
+    sensitive_word_avoidance:
+      enabled: false
+    speech_to_text:
+      enabled: false
+    suggested_questions: []
+    suggested_questions_after_answer:
+      enabled: false
+    text_to_speech:
+      enabled: false
+      language: ''
+      voice: ''
+  graph:
+    edges:
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: start
+        targetType: if-else
+      id: start-to-router
+      source: '1780000000201'
+      sourceHandle: source
+      target: '1780000000202'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: if-else
+        targetType: knowledge-retrieval
+      id: router-true-grade
+      source: '1780000000202'
+      sourceHandle: 'true'
+      target: '1780000000203'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: if-else
+        targetType: knowledge-retrieval
+      id: router-case-error
+      source: '1780000000202'
+      sourceHandle: chem-case-error
+      target: '1780000000204'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: if-else
+        targetType: knowledge-retrieval
+      id: router-case-material
+      source: '1780000000202'
+      sourceHandle: chem-case-material
+      target: '1780000000205'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: if-else
+        targetType: knowledge-retrieval
+      id: router-else-preview
+      source: '1780000000202'
+      sourceHandle: 'false'
+      target: '1780000000206'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: knowledge-retrieval
+        targetType: variable-aggregator
+      id: grade-to-agg
+      source: '1780000000203'
+      sourceHandle: source
+      target: '1780000000207'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: knowledge-retrieval
+        targetType: variable-aggregator
+      id: error-to-agg
+      source: '1780000000204'
+      sourceHandle: source
+      target: '1780000000207'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: knowledge-retrieval
+        targetType: variable-aggregator
+      id: material-to-agg
+      source: '1780000000205'
+      sourceHandle: source
+      target: '1780000000207'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: knowledge-retrieval
+        targetType: variable-aggregator
+      id: preview-to-agg
+      source: '1780000000206'
+      sourceHandle: source
+      target: '1780000000207'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: variable-aggregator
+        targetType: code
+      id: agg-to-code
+      source: '1780000000207'
+      sourceHandle: source
+      target: '1780000000208'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: code
+        targetType: llm
+      id: code-to-llm
+      source: '1780000000208'
+      sourceHandle: source
+      target: '1780000000209'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: llm
+        targetType: tool
+      id: llm-to-docx
+      source: '1780000000209'
+      sourceHandle: source
+      target: '1780000000210'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: tool
+        targetType: code
+      id: docx-to-code2
+      source: '1780000000210'
+      sourceHandle: source
+      target: '1780000000211'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: code
+        targetType: end
+      id: code2-to-end
+      source: '1780000000211'
+      sourceHandle: source
+      target: '1780000000212'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    nodes:
+    - data:
+        desc: 采集业务类型、任务内容、实验主题、年级、学生层次等教学业务参数
+        selected: false
+        title: 开始
+        type: start
+        variables:
+        - label: 业务类型
+          max_length: 48
+          options:
+          - 实验报告批改
+          - 误差分析
+          - 教学物料生成
+          - 预习复盘
+          required: true
+          type: select
+          variable: business_type
+        - label: 任务内容
+          max_length: 2000
+          options: []
+          required: true
+          type: paragraph
+          variable: task_content
+        - label: 实验主题
+          max_length: 48
+          options: []
+          required: true
+          type: text-input
+          variable: exp_topic
+        - label: 年级
+          max_length: 48
+          options:
+          - 九年级上
+          - 九年级下
+          required: true
+          type: select
+          variable: grade
+        - label: 学生层次
+          max_length: 48
+          options:
+          - 自动判断
+          - 学困生
+          - 中等生
+          - 优等生
+          required: true
+          type: select
+          variable: student_level
+        - label: 补充说明
+          max_length: 200
+          options: []
+          required: false
+          type: paragraph
+          variable: bcsm
+        - label: 实验报告文件（可选 PDF/Word/图片）
+          max_length: 48
+          options: []
+          required: false
+          type: file
+          variable: report_file
+          allowed_file_types:
+          - document
+          - image
+          allowed_file_extensions:
+          - .PDF
+          - .DOC
+          - .DOCX
+          - .TXT
+          - .MD
+          - .JPG
+          - .JPEG
+          - .PNG
+      height: 340
+      id: '1780000000201'
+      position:
+        x: 80
+        y: 282
+      positionAbsolute:
+        x: 80
+        y: 282
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        cases:
+        - case_id: 'true'
+          conditions:
+          - comparison_operator: contains
+            id: chem-cond-biz-grade
+            value: 实验报告批改
+            varType: string
+            variable_selector:
+            - '1780000000201'
+            - business_type
+          id: 'true'
+          logical_operator: and
+        - case_id: chem-case-error
+          conditions:
+          - comparison_operator: contains
+            id: chem-cond-biz-error
+            value: 误差分析
+            varType: string
+            variable_selector:
+            - '1780000000201'
+            - business_type
+          id: chem-case-error
+          logical_operator: and
+        - case_id: chem-case-material
+          conditions:
+          - comparison_operator: contains
+            id: chem-cond-biz-material
+            value: 教学物料生成
+            varType: string
+            variable_selector:
+            - '1780000000201'
+            - business_type
+          id: chem-case-material
+          logical_operator: and
+        desc: 按业务类型路由到对应化学知识库（报告批改/误差分析/物料生成/预习复盘）
+        selected: false
+        title: 业务类型路由
+        type: if-else
+      height: 280
+      id: '1780000000202'
+      position:
+        x: 384
+        y: 282
+      positionAbsolute:
+        x: 384
+        y: 282
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        dataset_ids:
+        - REPLACE_WITH_HX_01_KEBIAO_BIKAO
+        - REPLACE_WITH_HX_02_WEIXIAN_FENGXIAN
+        desc: 报告批改→课标必考实验库 + 危险操作风险库
+        multiple_retrieval_config:
+          reranking_enable: true
+          reranking_mode: reranking_model
+          reranking_model:
+            model: bge-reranker-base
+            provider: langgenius/xinference/xinference
+          score_threshold: null
+          top_k: 10
+        query_variable_selector:
+        - '1780000000201'
+        - exp_topic
+        retrieval_mode: multiple
+        selected: false
+        title: 报告批改知识库
+        type: knowledge-retrieval
+      height: 92
+      id: '1780000000203'
+      position:
+        x: 691
+        y: 80
+      positionAbsolute:
+        x: 691
+        y: 80
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        dataset_ids:
+        - REPLACE_WITH_HX_01_KEBIAO_BIKAO
+        desc: 误差分析→课标必考实验库（标准数据）
+        multiple_retrieval_config:
+          reranking_enable: true
+          reranking_mode: reranking_model
+          reranking_model:
+            model: bge-reranker-base
+            provider: langgenius/xinference/xinference
+          score_threshold: null
+          top_k: 10
+        query_variable_selector:
+        - '1780000000201'
+        - exp_topic
+        retrieval_mode: multiple
+        selected: false
+        title: 误差分析知识库
+        type: knowledge-retrieval
+      height: 92
+      id: '1780000000204'
+      position:
+        x: 691
+        y: 200
+      positionAbsolute:
+        x: 691
+        y: 200
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        dataset_ids:
+        - REPLACE_WITH_HX_06_KAODIAN_SUCHA
+        - REPLACE_WITH_HX_01_KEBIAO_BIKAO
+        desc: 教学物料→考点速查 + 课标必考实验库
+        multiple_retrieval_config:
+          reranking_enable: true
+          reranking_mode: reranking_model
+          reranking_model:
+            model: bge-reranker-base
+            provider: langgenius/xinference/xinference
+          score_threshold: null
+          top_k: 10
+        query_variable_selector:
+        - '1780000000201'
+        - exp_topic
+        retrieval_mode: multiple
+        selected: false
+        title: 物料生成知识库
+        type: knowledge-retrieval
+      height: 92
+      id: '1780000000205'
+      position:
+        x: 691
+        y: 320
+      positionAbsolute:
+        x: 691
+        y: 320
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        dataset_ids:
+        - REPLACE_WITH_HX_01_KEBIAO_BIKAO
+        - REPLACE_WITH_HX_06_KAODIAN_SUCHA
+        desc: 预习复盘→课标必考实验库 + 考点速查（兜底）
+        multiple_retrieval_config:
+          reranking_enable: true
+          reranking_mode: reranking_model
+          reranking_model:
+            model: bge-reranker-base
+            provider: langgenius/xinference/xinference
+          score_threshold: null
+          top_k: 10
+        query_variable_selector:
+        - '1780000000201'
+        - exp_topic
+        retrieval_mode: multiple
+        selected: false
+        title: 预习复盘知识库
+        type: knowledge-retrieval
+      height: 92
+      id: '1780000000206'
+      position:
+        x: 691
+        y: 440
+      positionAbsolute:
+        x: 691
+        y: 440
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        desc: 聚合 4 条业务分支的知识库检索结果
+        output_type: array[object]
+        selected: false
+        title: 变量聚合
+        type: variable-aggregator
+        variables:
+        - - '1780000000203'
+          - result
+        - - '1780000000204'
+          - result
+        - - '1780000000205'
+          - result
+        - - '1780000000206'
+          - result
+      height: 243
+      id: '1780000000207'
+      position:
+        x: 1010
+        y: 270
+      positionAbsolute:
+        x: 1010
+        y: 270
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        code: "import json\n\ndef main(arg1: list | dict) -> dict:\n    # 将知识库检索结果序列化为\
+          \ JSON 字符串\n    json_str = json.dumps(arg1, ensure_ascii=False, indent=2)\n\
+          \    return {\n        \"result\": json_str,\n    }"
+        code_language: python3
+        desc: ''
+        outputs:
+          result:
+            children: null
+            type: string
+        selected: false
+        title: 检索结果序列化
+        type: code
+        variables:
+        - value_selector:
+          - '1780000000207'
+          - output
+          variable: arg1
+      height: 54
+      id: '1780000000208'
+      position:
+        x: 1330
+        y: 377
+      positionAbsolute:
+        x: 1330
+        y: 377
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        context:
+          enabled: false
+          variable_selector: []
+        desc: 教学业务专家——自动判断子任务并匹配对应输出模板
+        model:
+          completion_params:
+            temperature: 0.5
+          mode: chat
+          name: Doubao-Seed-1.6
+          provider: langgenius/volcengine_maas/volcengine_maas
+        prompt_template:
+        - id: chem-teaching-system-01
+          role: system
+          text: |
+            ## 语言
+            始终使用简体中文回答。引用化学方程式必须配平并标注条件。
+
+            ## Role
+            你是「化知星」教学业务过程处理专家，面向初中化学教师，处理教学闭环中的 AI 辅助任务。你能自动判断子任务类型并匹配对应输出模板。
+
+            ## Input Parameters
+            - 业务类型：{{#1780000000201.business_type#}}
+            - 任务内容：{{#1780000000201.task_content#}}
+            - 实验主题：{{#1780000000201.exp_topic#}}
+            - 年级：{{#1780000000201.grade#}}
+            - 学生层次：{{#1780000000201.student_level#}}
+            - 补充说明：{{#1780000000201.bcsm#}}
+            - 知识库参考：{{#1780000000208.result#}}
+
+            ## Constraints
+            1. **子任务自动判断**：根据【业务类型】匹配对应输出模板，禁止跨模板混用。
+            2. **课标对标**：所有评阅、分析、物料生成必须以【知识库参考】与人教版课标为依据，不编造数据。
+            3. **教师视角**：严谨规范，使用教研术语；采分点📌、安全提醒🛡️显著标注。
+            4. **DOCX 友好**：输出内容使用标准 Markdown，表格、列表规范，便于 DOCX 转换。
+            5. **输出限制**：除业务报告正文外，禁止输出闲聊或无关信息。
+
+            ## 子任务输出模板
+
+            ### 模板一：实验报告批改（business_type=实验报告批改）
+            # 📋 实验报告批改报告
+            **[实验主题]·[学生层次]**
+            [年级]·人教版
+
+            ## 一、多维评分
+            | 评分维度 | 满分 | 得分 | 扣分点 |
+            |---------|:---:|:---:|-------|
+            | 原理阐述 | 25 | X | ... |
+            | 操作规范 | 25 | X | ... |
+            | 数据处理 | 25 | X | ... |
+            | 结论推导 | 25 | X | ... |
+            **总分：XX / 100**
+
+            ## 二、分项批注
+            逐段引用学生原文 + 📌批改意见
+
+            ## 三、标准答案对照
+            | 学生答案 | 标准答案 | 差异 |
+            |---------|---------|------|
+
+            ## 四、改进建议
+            1. ...
+            2. ...
+
+            ### 模板二：误差分析（business_type=误差分析）
+            # 📊 误差分析报告
+            **[实验主题]**
+
+            ## 一、标准数据
+            | 数据项 | 标准值 | 学生值 | 偏差% |
+            |-------|------|-------|------:|
+
+            ## 二、四维归因
+            | 维度 | 归因分析 | 改进措施 |
+            |------|---------|---------|
+            | 器材 | ... | ... |
+            | 操作 | ... | ... |
+            | 试剂 | ... | ... |
+            | 环境 | ... | ... |
+
+            ## 三、标准答题模板
+            ...
+
+            ### 模板三：教学物料生成（business_type=教学物料生成）
+            # 📝 教学物料：[预习单/教案/任务单/安全手册]
+            **[实验主题]·[年级]·人教版**
+
+            ## 一、教学目标
+            ## 二、重点难点
+            ## 三、教学准备（仪器/试剂/材料清单）
+            ## 四、教学过程（导入→新授→实验→总结→作业）
+            ## 五、安全提示🛡️
+            ## 六、评价量规
+
+            ### 模板四：预习复盘（business_type=预习复盘）
+            # 🔍 预习/复盘清单
+            **[实验主题]·[学生层次]**
+
+            ## 预习部分
+            - 知识铺垫：...
+            - 预习问题：1. ... 2. ...
+            - 简易预操作：...
+
+            ## 复盘部分
+            - 实验现象回忆：...
+            - 误差反思：...
+            - 薄弱点诊断：...
+            - 巩固任务：...
+        selected: false
+        title: 教学业务生成
+        type: llm
+        variables: []
+        vision:
+          enabled: false
+      height: 90
+      id: '1780000000209'
+      position:
+        x: 1650
+        y: 377
+      positionAbsolute:
+        x: 1650
+        y: 377
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        desc: ''
+        is_team_authorization: true
+        output_schema: null
+        paramSchemas:
+        - auto_generate: null
+          default: null
+          form: llm
+          human_description:
+            zh_Hans: 要转换为Word文档的Markdown内容
+          label:
+            zh_Hans: Markdown内容
+          name: markdown_content
+          options: []
+          required: true
+          type: string
+        - auto_generate: null
+          default: null
+          form: llm
+          human_description:
+            zh_Hans: Word文档标题
+          label:
+            zh_Hans: 文档标题
+          name: title
+          options: []
+          required: false
+          type: string
+        params:
+          markdown_content: ''
+          title: ''
+        provider_id: stvlynn/doc/doc
+        provider_name: stvlynn/doc/doc
+        provider_type: builtin
+        selected: false
+        title: Markdown转DOCX转换器
+        tool_configurations: {}
+        tool_description: 将Markdown内容转换为DOCX（Word）文档
+        tool_label: Markdown转DOCX转换器
+        tool_name: markdown_to_docx_converter
+        tool_parameters:
+          markdown_content:
+            type: mixed
+            value: '{{#1780000000209.text#}}'
+          title:
+            type: mixed
+            value: AI教学业务过程报告
+        type: tool
+      height: 54
+      id: '1780000000210'
+      position:
+        x: 1970
+        y: 377
+      positionAbsolute:
+        x: 1970
+        y: 377
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        code: "def main(arg1: list) -> dict:\n    # 从 DOCX 文件数组中提取第一个文件的 url\n\
+          \    if not arg1:\n        return {\"result\": \"\"}\n    url = arg1[0].get(\"\
+          url\", \"\")\n    return {\n        \"result\": url,\n    }"
+        code_language: python3
+        desc: ''
+        outputs:
+          result:
+            children: null
+            type: string
+        selected: false
+        title: 提取文档链接
+        type: code
+        variables:
+        - value_selector:
+          - '1780000000210'
+          - files
+          variable: arg1
+      height: 54
+      id: '1780000000211'
+      position:
+        x: 2290
+        y: 377
+      positionAbsolute:
+        x: 2290
+        y: 377
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        desc: ''
+        outputs:
+        - value_selector:
+          - '1780000000209'
+          - text
+          variable: text
+        - value_selector:
+          - '1780000000211'
+          - result
+          variable: url
+        selected: false
+        title: 结束
+        type: end
+      height: 116
+      id: '1780000000212'
+      position:
+        x: 2610
+        y: 377
+      positionAbsolute:
+        x: 2610
+        y: 377
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    viewport:
+      x: 0
+      y: 0
+      zoom: 0.8

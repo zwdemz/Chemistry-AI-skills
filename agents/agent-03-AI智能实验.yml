@@ -1,0 +1,729 @@
+app:
+  description: 'AI智能实验——按实验层级（基础/变量/居家/安全）路由到对应化学知识库，结合教学场景（预习/实操/复盘/居家）与学生层次，生成完整的实验目的、方程式、分步操作、标准现象、安全提示、常见错误与采分点结构化引导'
+  icon: "🧪"
+  icon_background: '#DCFCE7'
+  mode: workflow
+  name: AI智能实验
+  use_icon_as_answer_icon: false
+dependencies:
+- current_identifier: null
+  type: marketplace
+  value:
+    marketplace_plugin_unique_identifier: langgenius/volcengine_maas:0.0.20@aff2eaf766b1774519c3ca0e77de0b28c87b71cce6390b22a103518e8a5e4ae7
+- current_identifier: null
+  type: marketplace
+  value:
+    marketplace_plugin_unique_identifier: langgenius/xinference:0.0.4@db625fbb6b2f235adb820dd7dc3d98090f536e888c20150a0ba76ea47f50b178
+kind: app
+version: 0.3.0
+workflow:
+  conversation_variables: []
+  environment_variables: []
+  features:
+    file_upload:
+      enabled: true
+      allowed_file_upload_methods:
+      - local_file
+      - remote_url
+      allowed_file_extensions:
+      - .PDF
+      - .DOC
+      - .DOCX
+      - .TXT
+      - .MD
+      - .JPG
+      - .JPEG
+      - .PNG
+      allowed_file_types:
+      - document
+      - image
+      number_limits: 3
+      image:
+        enabled: true
+        number_limits: 3
+        detail: high
+        transfer_methods:
+        - local_file
+        - remote_url
+    opening_statement: ''
+    retriever_resource:
+      enabled: true
+    sensitive_word_avoidance:
+      enabled: false
+    speech_to_text:
+      enabled: false
+    suggested_questions: []
+    suggested_questions_after_answer:
+      enabled: false
+    text_to_speech:
+      enabled: false
+      language: ''
+      voice: ''
+  graph:
+    edges:
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: start
+        targetType: if-else
+      id: start-to-router
+      source: '1780000000001'
+      sourceHandle: source
+      target: '1780000000002'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: if-else
+        targetType: knowledge-retrieval
+      id: router-true-basic
+      source: '1780000000002'
+      sourceHandle: 'true'
+      target: '1780000000003'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: if-else
+        targetType: knowledge-retrieval
+      id: router-case-variable
+      source: '1780000000002'
+      sourceHandle: chem-case-variable
+      target: '1780000000004'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: if-else
+        targetType: knowledge-retrieval
+      id: router-case-home
+      source: '1780000000002'
+      sourceHandle: chem-case-home
+      target: '1780000000005'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: if-else
+        targetType: knowledge-retrieval
+      id: router-case-safety
+      source: '1780000000002'
+      sourceHandle: chem-case-safety
+      target: '1780000000006'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: if-else
+        targetType: knowledge-retrieval
+      id: router-else-general
+      source: '1780000000002'
+      sourceHandle: 'false'
+      target: '1780000000007'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: knowledge-retrieval
+        targetType: variable-aggregator
+      id: basic-to-agg
+      source: '1780000000003'
+      sourceHandle: source
+      target: '1780000000008'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: knowledge-retrieval
+        targetType: variable-aggregator
+      id: variable-to-agg
+      source: '1780000000004'
+      sourceHandle: source
+      target: '1780000000008'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: knowledge-retrieval
+        targetType: variable-aggregator
+      id: home-to-agg
+      source: '1780000000005'
+      sourceHandle: source
+      target: '1780000000008'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: knowledge-retrieval
+        targetType: variable-aggregator
+      id: safety-to-agg
+      source: '1780000000006'
+      sourceHandle: source
+      target: '1780000000008'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: knowledge-retrieval
+        targetType: variable-aggregator
+      id: general-to-agg
+      source: '1780000000007'
+      sourceHandle: source
+      target: '1780000000008'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: variable-aggregator
+        targetType: code
+      id: agg-to-code
+      source: '1780000000008'
+      sourceHandle: source
+      target: '1780000000009'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: code
+        targetType: llm
+      id: code-to-llm
+      source: '1780000000009'
+      sourceHandle: source
+      target: '1780000000010'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: llm
+        targetType: end
+      id: llm-to-end
+      source: '1780000000010'
+      sourceHandle: source
+      target: '1780000000011'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    nodes:
+    - data:
+        desc: 采集实验层级、主题、场景、年级、学生层次等实验引导参数
+        selected: false
+        title: 开始
+        type: start
+        variables:
+        - label: 实验层级
+          max_length: 48
+          options:
+          - 基础层
+          - 变量层
+          - 居家层
+          - 安全层
+          - 综合
+          required: true
+          type: select
+          variable: exp_layer
+        - label: 实验主题
+          max_length: 48
+          options: []
+          required: true
+          type: text-input
+          variable: exp_topic
+        - label: 年级
+          max_length: 48
+          options:
+          - 九年级上
+          - 九年级下
+          required: true
+          type: select
+          variable: grade
+        - label: 教学场景
+          max_length: 48
+          options:
+          - 课前预习
+          - 课堂实操
+          - 课后复盘
+          - 居家拓展
+          required: true
+          type: select
+          variable: scene
+        - label: 学生层次
+          max_length: 48
+          options:
+          - 自动判断
+          - 学困生
+          - 中等生
+          - 优等生
+          required: true
+          type: select
+          variable: student_level
+        - label: 关注重点
+          max_length: 200
+          options: []
+          required: false
+          type: paragraph
+          variable: focus
+        - label: 校本实验素材文件（可选 PDF/Word/图片）
+          max_length: 48
+          options: []
+          required: false
+          type: file
+          variable: material_file
+          allowed_file_types:
+          - document
+          - image
+          allowed_file_extensions:
+          - .PDF
+          - .DOC
+          - .DOCX
+          - .TXT
+          - .MD
+          - .JPG
+          - .JPEG
+          - .PNG
+      height: 340
+      id: '1780000000001'
+      position:
+        x: 80
+        y: 282
+      positionAbsolute:
+        x: 80
+        y: 282
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        cases:
+        - case_id: 'true'
+          conditions:
+          - comparison_operator: contains
+            id: chem-cond-exp-basic
+            value: 基础层
+            varType: string
+            variable_selector:
+            - '1780000000001'
+            - exp_layer
+          id: 'true'
+          logical_operator: and
+        - case_id: chem-case-variable
+          conditions:
+          - comparison_operator: contains
+            id: chem-cond-exp-var
+            value: 变量层
+            varType: string
+            variable_selector:
+            - '1780000000001'
+            - exp_layer
+          id: chem-case-variable
+          logical_operator: and
+        - case_id: chem-case-home
+          conditions:
+          - comparison_operator: contains
+            id: chem-cond-exp-home
+            value: 居家层
+            varType: string
+            variable_selector:
+            - '1780000000001'
+            - exp_layer
+          id: chem-case-home
+          logical_operator: and
+        - case_id: chem-case-safety
+          conditions:
+          - comparison_operator: contains
+            id: chem-cond-exp-safety
+            value: 安全层
+            varType: string
+            variable_selector:
+            - '1780000000001'
+            - exp_layer
+          id: chem-case-safety
+          logical_operator: and
+        desc: 按实验层级路由到对应化学知识库
+        selected: false
+        title: 实验层级路由
+        type: if-else
+      height: 340
+      id: '1780000000002'
+      position:
+        x: 384
+        y: 282
+      positionAbsolute:
+        x: 384
+        y: 282
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        dataset_ids:
+        - REPLACE_WITH_HX_01_KEBIAO_BIKAO
+        - REPLACE_WITH_HX_06_KAODIAN_SUCHA
+        desc: 基础层→课标必考实验库 + 考点速查
+        multiple_retrieval_config:
+          reranking_enable: true
+          reranking_mode: reranking_model
+          reranking_model:
+            model: bge-reranker-base
+            provider: langgenius/xinference/xinference
+          score_threshold: null
+          top_k: 10
+        query_variable_selector:
+        - '1780000000001'
+        - exp_topic
+        retrieval_mode: multiple
+        selected: false
+        title: 基础层知识库
+        type: knowledge-retrieval
+      height: 92
+      id: '1780000000003'
+      position:
+        x: 691
+        y: 60
+      positionAbsolute:
+        x: 691
+        y: 60
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        dataset_ids:
+        - REPLACE_WITH_HX_03_BIANLIANG_TANJIU
+        - REPLACE_WITH_HX_06_KAODIAN_SUCHA
+        desc: 变量层→变量对照探究实验库 + 考点速查
+        multiple_retrieval_config:
+          reranking_enable: true
+          reranking_mode: reranking_model
+          reranking_model:
+            model: bge-reranker-base
+            provider: langgenius/xinference/xinference
+          score_threshold: null
+          top_k: 10
+        query_variable_selector:
+        - '1780000000001'
+        - exp_topic
+        retrieval_mode: multiple
+        selected: false
+        title: 变量层知识库
+        type: knowledge-retrieval
+      height: 92
+      id: '1780000000004'
+      position:
+        x: 691
+        y: 172
+      positionAbsolute:
+        x: 691
+        y: 172
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        dataset_ids:
+        - REPLACE_WITH_HX_04_JUJIA_TUOZHAN
+        desc: 居家层→居家安全拓展实验库
+        multiple_retrieval_config:
+          reranking_enable: true
+          reranking_mode: reranking_model
+          reranking_model:
+            model: bge-reranker-base
+            provider: langgenius/xinference/xinference
+          score_threshold: null
+          top_k: 10
+        query_variable_selector:
+        - '1780000000001'
+        - exp_topic
+        retrieval_mode: multiple
+        selected: false
+        title: 居家层知识库
+        type: knowledge-retrieval
+      height: 92
+      id: '1780000000005'
+      position:
+        x: 691
+        y: 284
+      positionAbsolute:
+        x: 691
+        y: 284
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        dataset_ids:
+        - REPLACE_WITH_HX_02_WEIXIAN_FENGXIAN
+        - REPLACE_WITH_HX_05_ANQUAN_CHUANGGUAN
+        desc: 安全层→危险操作风险库 + 安全闯关题库
+        multiple_retrieval_config:
+          reranking_enable: true
+          reranking_mode: reranking_model
+          reranking_model:
+            model: bge-reranker-base
+            provider: langgenius/xinference/xinference
+          score_threshold: null
+          top_k: 10
+        query_variable_selector:
+        - '1780000000001'
+        - exp_topic
+        retrieval_mode: multiple
+        selected: false
+        title: 安全层知识库
+        type: knowledge-retrieval
+      height: 92
+      id: '1780000000006'
+      position:
+        x: 691
+        y: 396
+      positionAbsolute:
+        x: 691
+        y: 396
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        dataset_ids:
+        - REPLACE_WITH_HX_06_KAODIAN_SUCHA
+        - REPLACE_WITH_HX_01_KEBIAO_BIKAO
+        desc: 综合→考点速查 + 课标必考实验库（兜底）
+        multiple_retrieval_config:
+          reranking_enable: true
+          reranking_mode: reranking_model
+          reranking_model:
+            model: bge-reranker-base
+            provider: langgenius/xinference/xinference
+          score_threshold: null
+          top_k: 10
+        query_variable_selector:
+        - '1780000000001'
+        - exp_topic
+        retrieval_mode: multiple
+        selected: false
+        title: 综合知识库
+        type: knowledge-retrieval
+      height: 92
+      id: '1780000000007'
+      position:
+        x: 691
+        y: 508
+      positionAbsolute:
+        x: 691
+        y: 508
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        desc: 聚合 5 条分支的知识库检索结果
+        output_type: array[object]
+        selected: false
+        title: 变量聚合
+        type: variable-aggregator
+        variables:
+        - - '1780000000003'
+          - result
+        - - '1780000000004'
+          - result
+        - - '1780000000005'
+          - result
+        - - '1780000000006'
+          - result
+        - - '1780000000007'
+          - result
+      height: 279
+      id: '1780000000008'
+      position:
+        x: 1010
+        y: 270
+      positionAbsolute:
+        x: 1010
+        y: 270
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        code: "import json\n\ndef main(arg1: list | dict) -> dict:\n    # 将知识库检索结果序列化为\
+          \ JSON 字符串\n    json_str = json.dumps(arg1, ensure_ascii=False, indent=2)\n\
+          \    return {\n        \"result\": json_str,\n    }"
+        code_language: python3
+        desc: ''
+        outputs:
+          result:
+            children: null
+            type: string
+        selected: false
+        title: 检索结果序列化
+        type: code
+        variables:
+        - value_selector:
+          - '1780000000008'
+          - output
+          variable: arg1
+      height: 54
+      id: '1780000000009'
+      position:
+        x: 1330
+        y: 377
+      positionAbsolute:
+        x: 1330
+        y: 377
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        context:
+          enabled: false
+          variable_selector: []
+        desc: 化学实验引导专家——生成实验目的/分步操作/标准现象/安全提示/常见错误/采分点
+        model:
+          completion_params:
+            temperature: 0.6
+          mode: chat
+          name: Doubao-Seed-1.6
+          provider: langgenius/volcengine_maas/volcengine_maas
+        prompt_template:
+        - id: chem-exp-system-01
+          role: system
+          text: |
+            ## 语言
+            始终使用简体中文回答。化学方程式必须配平并标注反应条件（如△、点燃、催化剂）。
+
+            ## Role
+            你是「化知星」初中化学虚拟实验操作引导员，覆盖四层实验体系（基础必考/变量探究/居家拓展/安全模拟）。你能基于【知识库内容】给出结构化、可执行的实验引导，覆盖"预习准备→操作指导→安全提醒→误差分析→考点标注→巩固练习"六环节闭环。
+
+            ## Input Parameters
+            - 实验层级：{{#1780000000001.exp_layer#}}
+            - 实验主题：{{#1780000000001.exp_topic#}}
+            - 年级：{{#1780000000001.grade#}}
+            - 教学场景：{{#1780000000001.scene#}}
+            - 学生层次：{{#1780000000001.student_level#}}
+            - 关注重点：{{#1780000000001.focus#}}
+            - 知识库内容：{{#1780000000009.result#}}
+
+            ## Constraints
+            1. **内容闭环**：引导内容必须 100% 来源于【知识库内容】与人教版课标，严禁编造仪器规格、试剂用量或反应现象；不确定的标注「需与教材核对」。
+            2. **安全红线**：涉及实验操作时，🛡️ 安全提示前置或显著标注；不提供可复现的危险操作步骤，但需说明"为何不能这样做"。
+            3. **分层适配**：
+               - 学困生：生活化类比、慢节奏、分步拆解、多鼓励。
+               - 中等生：规范术语+知识关联+📌采分点标注。
+               - 优等生：变量控制思维、探究性问题、适度高中衔接。
+            4. **场景适配**：
+               - 课前预习：启发式，侧重知识铺垫、简易预操作、预习检测问题。
+               - 课堂实操：辅助纠错式，侧重步骤审核、操作纠错、采分点提醒。
+               - 课后复盘：总结归纳式，侧重误差归因、报告撰写、薄弱点诊断。
+               - 居家拓展：轻松科普式，侧重生活类比与安全指南。
+            5. **可执行性**：操作步骤可照做；仪器名称、试剂规格、读数方法到位。
+            6. **输出限制**：除实验引导正文外，禁止输出闲聊、问候或其他无关信息。
+
+            ## Output Format
+            严格按以下结构输出 Markdown：
+
+            # 🧪 AI智能实验：{{实验主题}}
+            **[实验层级]·[教学场景]·[学生层次]**
+            [年级]·人教版初中化学
+
+            ---
+
+            ## 一、实验目的与原理
+            一句话目的 + 核心化学方程式（配平+条件）
+
+            ## 二、仪器与试剂
+            表格列出：仪器/试剂名称、规格、用量、用途
+
+            ## 三、分步操作
+            1. **[操作步骤]** —— 仪器：XX｜原因：XX
+            2. **[操作步骤]** —— 仪器：XX｜原因：XX
+            （按编号列出完整流程）
+
+            ## 四、标准现象与结论
+            | 观察点 | 标准现象 | 结论 |
+            |--------|---------|------|
+            | ... | ... | ... |
+
+            ## 五、🛡️ 安全提示
+            - ⚠️ 风险点：...
+            - ✅ 规范操作：...
+            - 🚑 应急处理：...
+
+            ## 六、❌→✅ 常见错误与纠正
+            | 常见错误 | 后果 | 正确做法 |
+            |---------|------|---------|
+            | ... | ... | ... |
+
+            ## 七、📌 考试采分点
+            1. ...
+            2. ...
+
+            ## 八、巩固练习（1-2 题）
+            针对本实验的随堂检测题与参考答案
+        selected: false
+        title: 实验引导生成
+        type: llm
+        variables: []
+        vision:
+          enabled: false
+      height: 90
+      id: '1780000000010'
+      position:
+        x: 1650
+        y: 377
+      positionAbsolute:
+        x: 1650
+        y: 377
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        desc: ''
+        outputs:
+        - value_selector:
+          - '1780000000010'
+          - text
+          variable: text
+        selected: false
+        title: 结束
+        type: end
+      height: 90
+      id: '1780000000011'
+      position:
+        x: 1970
+        y: 377
+      positionAbsolute:
+        x: 1970
+        y: 377
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    viewport:
+      x: 0
+      y: 0
+      zoom: 0.8
